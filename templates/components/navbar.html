@@ -1,0 +1,138 @@
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+
+    <div class="container-fluid app-navbar-inner">
+
+        <a class="navbar-brand app-brand"
+           href="{% url 'dashboard' %}">
+
+            Financial Tracker
+
+        </a>
+
+        {% if user.is_authenticated %}
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        {% endif %}
+
+        <div class="collapse navbar-collapse"
+             id="navbarNav">
+
+            <ul class="navbar-nav app-nav-links">
+
+                {% if user.is_authenticated %}
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{% url 'dashboard' %}">
+
+                        {{ t.dashboard }}
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{% url 'transaction_list' %}">
+
+                        {{ t.transactions }}
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{% url 'transaction_create' %}">
+
+                        {{ t.add }}
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            </ul>
+
+            {% if user.is_authenticated %}
+
+            <div class="app-nav-right">
+
+                <ul class="navbar-nav app-preference-actions">
+
+                <li class="nav-item">
+
+                    <a class="language-toggle"
+                       href="{% url 'set_preferences' %}?language={% if ui_language == 'es' %}en{% else %}es{% endif %}&next={{ request.get_full_path|urlencode }}">
+
+                        <span class="{% if ui_language == 'es' %}active{% endif %}">ES</span>
+                        <span class="{% if ui_language == 'en' %}active{% endif %}">EN</span>
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="theme-toggle {% if ui_theme == 'light' %}is-light{% endif %}"
+                       href="{% url 'set_preferences' %}?theme={% if ui_theme == 'dark' %}light{% else %}dark{% endif %}&next={{ request.get_full_path|urlencode }}">
+
+                        <span class="theme-toggle-track">
+                            <span class="theme-toggle-knob"></span>
+                        </span>
+
+                    </a>
+
+                </li>
+
+                </ul>
+
+                <ul class="navbar-nav app-user-actions">
+
+                <li class="nav-item">
+
+                    <span class="navbar-text">
+
+                        {{ user.username }}
+
+                    </span>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="btn btn-sm btn-outline-light"
+                       href="{% url 'logout' %}">
+
+                        {{ t.logout }}
+
+                    </a>
+
+                </li>
+
+                </ul>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</nav>

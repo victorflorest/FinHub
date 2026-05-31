@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t.update_transaction }}{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-8">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body p-4">
+
+                <h2 class="mb-4">
+                    {{ t.update_transaction }}
+                </h2>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    {{ form.as_p }}
+
+                    <button type="submit"
+                            class="btn btn-warning">
+                        {{ t.update_transaction }}
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ t.dashboard }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    {{ t.financial_dashboard }}
+</h1>
+
+<!-- ACCOUNTS SLIDER -->
+
+<div class="accounts-section mb-4">
+
+    <button class="slider-control"
+            type="button"
+            data-slider-direction="-1"
+            aria-label="Previous accounts">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div class="accounts-slider"
+         id="accountsSlider">
+
+    {% for account in accounts %}
+
+        <div
+            class="account-card"
+            style="background-color: {{ account.color }};"
+        >
+
+            <div>
+
+                <small>
+                    {% if account.account_type == 'cash' %}
+                        {{ account_type_labels.cash }}
+                    {% elif account.account_type == 'credit_card' %}
+                        {{ account_type_labels.credit_card }}
+                    {% else %}
+                        {{ account_type_labels.debit_card }}
+                    {% endif %}
+                </small>
+
+                <h4>
+                    {{ account.name }}
+                </h4>
+
+                <div class="account-actions">
+                    <a href="{% url 'account_update' account.id %}"
+                       aria-label="Edit {{ account.name }}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a href="{% url 'account_delete' account.id %}"
+                       aria-label="Delete {{ account.name }}">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <div>
+
+                {% if account.account_type == 'credit_card' %}
+
+                    <small>
+                        {{ t.credit_available }}
+                    </small>
+
+                    <h2>
+                        {{ account.currency }}
+                        {{ account.available_credit }}
+                    </h2>
+
+                    <small>
+                        {{ t.credit_used }}: {{ account.currency }} {{ account.used_credit }}
+                    </small>
+
+                {% else %}
+
+                    <h2>
+                        {{ account.currency }}
+                        {{ account.current_balance }}
+                    </h2>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+    <a
+        href="{% url 'account_create' %}"
+        class="add-account-card"
+    >
+        +
+    </a>
+
+    </div>
+
+    <button class="slider-control"
+            type="button"
+            data-slider-direction="1"
+            aria-label="Next accounts">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+</div>
+
+<!-- SUMMARY CARDS -->
+
+<div class="row">
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <h5>{{ t.total_income }}</h5>
+
+                <h2 class="text-success">
+                    S/ {{ income_total }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <h5>{{ t.total_expenses }}</h5>
+
+                <h2 class="text-danger">
+                    S/ {{ expense_total }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <h5>{{ t.balance }}</h5>
+
+                <h2 class="text-primary">
+                    S/ {{ balance }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART -->
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <h4 class="mb-4">
+            {{ t.financial_overview }}
+        </h4>
+
+        <canvas id="financeChart"></canvas>
+
+    </div>
+
+</div>
+
+<!-- RECENT TRANSACTIONS -->
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body">
+
+        <h4 class="mb-4">
+            {{ t.recent_transactions }}
+        </h4>
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>{{ t.category }}</th>
+                    <th>{{ t.account_card }}</th>
+                    <th>{{ t.amount }}</th>
+                    <th>{{ t.date }}</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for transaction in recent_transactions %}
+
+                <tr>
+
+                    <td>
+                        {{ transaction.display_category_name }}
+                    </td>
+
+                    <td>
+                        {% if transaction.account %}
+                            {{ transaction.account.name }}
+                            <small class="text-muted d-block">
+                                {% if transaction.account.account_type == 'cash' %}
+                                    {{ account_type_labels.cash }}
+                                {% elif transaction.account.account_type == 'credit_card' %}
+                                    {{ account_type_labels.credit_card }}
+                                {% else %}
+                                    {{ account_type_labels.debit_card }}
+                                {% endif %}
+                            </small>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        S/ {{ transaction.amount }}
+                    </td>
+
+                    <td>
+                        {{ transaction.transaction_date }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- CHART JS -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const ctx = document.getElementById('financeChart');
+
+    new Chart(ctx, {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels: [
+                '{{ t.income }}',
+                '{{ t.expenses }}'
+            ],
+
+            datasets: [{
+
+                label: '{{ t.financial_overview }}',
+
+                data: [
+                    Number("{{ income_chart }}"),
+                    Number("{{ expense_chart }}")
+                ],
+
+                borderWidth: 1
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+</script>
+
+<script>
+    const accountsSlider = document.getElementById('accountsSlider');
+    const sliderControls = document.querySelectorAll('[data-slider-direction]');
+
+    sliderControls.forEach((control) => {
+        control.addEventListener('click', () => {
+            const direction = Number(control.dataset.sliderDirection);
+            accountsSlider.scrollBy({
+                left: direction * Math.min(accountsSlider.clientWidth, 380),
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    let isDragging = false;
+    let didDrag = false;
+    let dragStartX = 0;
+    let startScrollLeft = 0;
+
+    accountsSlider.addEventListener('pointerdown', (event) => {
+        if (event.target.closest('a, button, input, select, textarea')) {
+            return;
+        }
+
+        isDragging = true;
+        didDrag = false;
+        dragStartX = event.clientX;
+        startScrollLeft = accountsSlider.scrollLeft;
+        accountsSlider.setPointerCapture(event.pointerId);
+        accountsSlider.classList.add('is-dragging');
+    });
+
+    accountsSlider.addEventListener('pointermove', (event) => {
+        if (!isDragging) {
+            return;
+        }
+
+        const dragDistance = event.clientX - dragStartX;
+
+        if (Math.abs(dragDistance) > 6) {
+            didDrag = true;
+        }
+
+        accountsSlider.scrollLeft = startScrollLeft - dragDistance;
+    });
+
+    accountsSlider.addEventListener('pointerup', () => {
+        isDragging = false;
+        accountsSlider.classList.remove('is-dragging');
+    });
+
+    accountsSlider.addEventListener('pointercancel', () => {
+        isDragging = false;
+        accountsSlider.classList.remove('is-dragging');
+    });
+
+    accountsSlider.addEventListener('click', (event) => {
+        if (didDrag) {
+            event.preventDefault();
+            didDrag = false;
+        }
+    }, true);
+</script>
+
+{% endblock %}
+

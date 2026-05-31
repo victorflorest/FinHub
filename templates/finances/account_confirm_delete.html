@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ t.delete_account }}
+{% endblock %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body">
+
+        <h2>
+            {{ t.delete_account }}
+        </h2>
+
+        <p>
+            {% if ui_language == 'es' %}Seguro que deseas eliminar:{% else %}Are you sure you want to delete:{% endif %}
+            <strong>{{ account.name }}</strong>?
+        </p>
+
+        <p class="text-muted">
+            {% if ui_language == 'es' %}
+                Tambien se eliminaran {{ transaction_count }} transacciones relacionadas.
+            {% else %}
+                This will also delete {{ transaction_count }} related transaction{{ transaction_count|pluralize }}.
+            {% endif %}
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="btn btn-danger"
+            >
+                {{ t.delete }}
+            </button>
+
+            <a href="{% url 'dashboard' %}"
+               class="btn btn-outline-light ms-2">
+                {{ t.cancel }}
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

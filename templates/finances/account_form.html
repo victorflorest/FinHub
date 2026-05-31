@@ -1,0 +1,78 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+{{ t.financial_account }}
+{% endblock %}
+
+{% block content %}
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body">
+
+        <h2 class="mb-4">
+            {{ t.financial_account }}
+        </h2>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                {{ t.save_account }}
+            </button>
+
+            <a href="{% url 'dashboard' %}"
+               class="btn btn-outline-light ms-2">
+                {{ t.cancel }}
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const accountTypeField = document.querySelector('[data-account-type]');
+    const creditFields = document.querySelectorAll('[data-credit-field]');
+    const balanceField = document.querySelector('[data-balance-field]');
+
+    function updateCreditFields() {
+        const isCredit = accountTypeField.value === 'credit_card';
+
+        creditFields.forEach((field) => {
+            const fieldWrapper = field.closest('p');
+
+            if (fieldWrapper) {
+                fieldWrapper.hidden = !isCredit;
+            }
+
+            field.required = isCredit;
+        });
+
+        if (balanceField) {
+            const balanceWrapper = balanceField.closest('p');
+
+            if (balanceWrapper) {
+                balanceWrapper.hidden = isCredit;
+            }
+
+            balanceField.required = !isCredit;
+        }
+    }
+
+    if (accountTypeField) {
+        accountTypeField.addEventListener('change', updateCreditFields);
+        updateCreditFields();
+    }
+</script>
+
+{% endblock %}
+

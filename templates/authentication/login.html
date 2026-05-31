@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ t.login }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center align-items-center min-vh-100">
+
+    <div class="col-md-4">
+
+        <div class="card shadow border-0">
+
+            <div class="card-body p-4">
+
+                <h2 class="text-center mb-4">
+                    {{ t.login }}
+                </h2>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    {{ form.as_p }}
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+
+                        {{ t.login }}
+
+                    </button>
+
+                </form>
+
+                <hr>
+
+                <div class="text-center">
+
+                    <p class="mb-3">
+                        {% if ui_language == 'es' %}No tienes una cuenta?{% else %}Don't have an account?{% endif %}
+                    </p>
+
+                    <a href="{% url 'register' %}"
+                       class="btn btn-outline-primary w-100">
+
+                        {{ t.register }}
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
