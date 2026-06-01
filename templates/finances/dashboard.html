@@ -181,7 +181,33 @@
             {{ t.financial_overview }}
         </h4>
 
-        <canvas id="financeChart"></canvas>
+        <div class="finance-chart-wrap">
+
+            <div
+                class="finance-donut {% if not has_chart_data %}is-empty{% endif %}"
+                style="--income-degrees: {{ income_degrees }}deg;"
+                aria-label="{{ t.financial_overview }}"
+            >
+                <div class="finance-donut-hole"></div>
+            </div>
+
+            <div class="finance-legend">
+
+                <div class="finance-legend-item">
+                    <span class="finance-legend-dot income"></span>
+                    <span>{{ t.income }}</span>
+                    <strong>S/ {{ income_total }}</strong>
+                </div>
+
+                <div class="finance-legend-item">
+                    <span class="finance-legend-dot expense"></span>
+                    <span>{{ t.expenses }}</span>
+                    <strong>S/ {{ expense_total }}</strong>
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -258,54 +284,6 @@
     </div>
 
 </div>
-
-<!-- CHART JS -->
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-
-    const ctx = document.getElementById('financeChart');
-
-    new Chart(ctx, {
-
-        type: 'doughnut',
-
-        data: {
-
-            labels: [
-                '{{ t.income }}',
-                '{{ t.expenses }}'
-            ],
-
-            datasets: [{
-
-                label: '{{ t.financial_overview }}',
-
-                data: [
-                    Number("{{ income_chart }}"),
-                    Number("{{ expense_chart }}")
-                ],
-
-                borderWidth: 1
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-                    position: 'bottom',
-                }
-            }
-        }
-    });
-
-</script>
 
 <script>
     const accountsSlider = document.getElementById('accountsSlider');

@@ -231,6 +231,14 @@ def dashboard(request):
     )['total'] or 0
 
     balance = income_total - expense_total
+    chart_total = income_total + expense_total
+
+    if chart_total:
+        income_degrees = round(float(income_total / chart_total * 360), 2)
+        expense_degrees = 360 - income_degrees
+    else:
+        income_degrees = 0
+        expense_degrees = 0
 
     recent_transactions = list(Transaction.objects.filter(
         user=request.user
@@ -254,6 +262,9 @@ def dashboard(request):
         'recent_transactions': recent_transactions,
         'income_chart': float(income_total),
         'expense_chart': float(expense_total),
+        'income_degrees': income_degrees,
+        'expense_degrees': expense_degrees,
+        'has_chart_data': chart_total > 0,
         'accounts': accounts,
     }
 
