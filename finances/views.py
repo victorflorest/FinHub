@@ -240,6 +240,16 @@ def dashboard(request):
         income_degrees = 0
         expense_degrees = 0
 
+    if chart_total:
+        chart_background = (
+            'conic-gradient('
+            f'#39a3e6 0deg {income_degrees}deg, '
+            f'#f45f86 {income_degrees}deg 360deg'
+            ')'
+        )
+    else:
+        chart_background = 'conic-gradient(#565d68 0deg 360deg)'
+
     recent_transactions = list(Transaction.objects.filter(
         user=request.user
     ).select_related('account', 'category').order_by('-transaction_date')[:5])
@@ -264,6 +274,7 @@ def dashboard(request):
         'expense_chart': float(expense_total),
         'income_degrees': income_degrees,
         'expense_degrees': expense_degrees,
+        'chart_background': chart_background,
         'has_chart_data': chart_total > 0,
         'accounts': accounts,
     }
