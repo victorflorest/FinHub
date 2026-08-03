@@ -1,4 +1,5 @@
 from pathlib import Path
+from decouple import config
 import os
 
 import dj_database_url
@@ -29,12 +30,12 @@ SECRET_KEY = os.getenv(
     'django-insecure-186ual4&!4u3d06wmwj=c#s4mfjj2+cywjcngvi&g5955df94('
 )
 
-DEBUG = env_bool('DEBUG', True)
+DEBUG = env_bool('DEBUG', False)
 
-ALLOWED_HOSTS = env_list(
-    'ALLOWED_HOSTS',
-    '127.0.0.1,localhost'
-)
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="127.0.0.1,localhost",
+).split(",")
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 
